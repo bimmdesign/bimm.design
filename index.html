@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="bimm. diseña tu presencia digital a medida. Web profesional, automatizaciones de WhatsApp e Instagram y resultados reales en días. Para negocios locales que quieren crecer.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://bimm.design">
+    <meta property="og:title" content="bimm. — Presencia digital para negocios">
+    <meta property="og:description" content="Web profesional, automatizaciones inteligentes y resultados reales desde el primer día. Para negocios locales.">
+    <meta property="og:image" content="https://bimm.design/bimmi.png">
+    <meta property="og:image:width" content="1080">
+    <meta property="og:image:height" content="1080">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://bimm.design/bimmi.png">
+    <title>bimm. — Presencia digital para negocios</title>
+    <link rel="icon" type="image/png" href="/bimmi.png">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #080808; --text: #F5F5F5; --accent: #AAFF00;
+            --muted: #666; --card-bg: #0f0f0f; --border: #1c1c1c;
+        }
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; cursor: none; }
+
+        /* LOADER */
+        #loader { position: fixed; inset: 0; z-index: 10000; background: var(--bg); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1.5rem; }
+        .loader-logo { font-size: 3.5rem; font-weight: 800; letter-spacing: -.05em; color: var(--text); }
+        .loader-logo span { color: var(--accent); }
+        .loader-bar { width: 120px; height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+        .loader-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 2px; }
+
+        /* CURSOR */
+        .cursor { position: fixed; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .15s, height .15s; mix-blend-mode: difference; }
+
+        /* COMPANION */
+        #companion-wrap { position: fixed; z-index: 500; pointer-events: none; width: 76px; height: 69px; filter: drop-shadow(0 0 12px rgba(170,255,0,.5)); }
+        #companion-wrap svg { width: 100%; height: 100%; }
+
+        /* NAVBAR */
+        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 1.6rem 4rem; transition: background .3s, backdrop-filter .3s, border-color .3s; border-bottom: 1px solid transparent; }
+        nav.scrolled { background: rgba(8,8,8,.9); backdrop-filter: blur(24px); border-color: var(--border); }
+        .nav-logo { font-size: 1.45rem; font-weight: 800; color: var(--text); text-decoration: none; letter-spacing: -.04em; }
+        .nav-logo span { color: var(--accent); }
+        .nav-links { display: flex; gap: 2.5rem; list-style: none; align-items: center; }
+        .nav-links a { color: var(--muted); text-decoration: none; font-size: .88rem; font-weight: 500; transition: color .2s; }
+        .nav-links a:hover { color: var(--text); }
+        .nav-cta { background: var(--accent) !important; color: var(--bg) !important; padding: .55rem 1.4rem; border-radius: 100px; font-weight: 700 !important; transition: box-shadow .2s !important; }
+        .nav-cta:hover { box-shadow: 0 0 24px rgba(170,255,0,.45); }
+
+        /* HERO */
+        #hero { min-height: 100vh; display: flex; align-items: center; padding: 6rem 4rem 4rem; position: relative; overflow: hidden; }
+        .hero-content { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto; }
+        .hero-badge { display: inline-flex; align-items: center; gap: .5rem; background: rgba(170,255,0,.07); border: 1px solid rgba(170,255,0,.2); color: var(--accent); padding: .38rem 1rem; border-radius: 100px; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 2rem; }
+        .hero-badge::before { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: dot-pulse 2s infinite; }
+        @keyframes dot-pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(1.8)} }
+        .hero-title { font-size: clamp(2.8rem, 5.5vw, 5.2rem); font-weight: 800; line-height: 1.0; letter-spacing: -.048em; margin-bottom: 1.6rem; }
+        .hero-title .accent { color: var(--accent); text-shadow: 0 0 40px rgba(170,255,0,.35); }
+        .hero-sub { font-size: 1.05rem; color: var(--muted); line-height: 1.75; margin-bottom: 2.8rem; max-width: 460px; }
+        .hero-actions { display: flex; gap: 1rem; align-items: center; }
+        .btn-primary { background: var(--accent); color: var(--bg); padding: .9rem 2.2rem; border-radius: 100px; font-weight: 700; font-size: .95rem; text-decoration: none; display: inline-block; transition: transform .2s, box-shadow .2s; font-family: 'Space Grotesk', sans-serif; border: none; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(170,255,0,.4); }
+        .btn-ghost { color: var(--muted); font-size: .95rem; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: .4rem; transition: color .2s; }
+        .btn-ghost::after { content: '→'; transition: transform .2s; }
+        .btn-ghost:hover { color: var(--text); }
+        .btn-ghost:hover::after { transform: translateX(5px); }
+        .scroll-hint { position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: .4rem; color: var(--muted); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
+        .scroll-hint-line { width: 1px; height: 36px; background: linear-gradient(to bottom, var(--accent), transparent); animation: scroll-drop 1.8s ease-in-out infinite; }
+        @keyframes scroll-drop { 0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top} 51%{transform:scaleY(1);transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom} }
+
+        /* MASCOT SVG */
+        .hero-mascot { display: flex; justify-content: center; align-items: center; }
+        .mascot-wrap { position: relative; width: 320px; height: 320px; }
+        .mascot-halo { position: absolute; inset: -8%; background: radial-gradient(circle, rgba(170,255,0,.2) 0%, transparent 65%); animation: halo 3.5s ease-in-out infinite; }
+        @keyframes halo { 0%,100%{opacity:.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.1)} }
+        .mascot-svg { width: 100%; height: 100%; animation: float 4.5s ease-in-out infinite; filter: drop-shadow(0 0 30px rgba(170,255,0,.5)); }
+        @keyframes float { 0%,100%{transform:translateY(0) rotate(0deg)} 30%{transform:translateY(-18px) rotate(1.5deg)} 70%{transform:translateY(-9px) rotate(-1deg)} }
+        .eye-dot { animation: blink 5s infinite; transform-box: fill-box; transform-origin: center; }
+        @keyframes blink { 0%,44%,56%,100%{transform:scaleY(1)} 48%,52%{transform:scaleY(0.05)} }
+
+        /* STATS */
+        .stats-strip { display: flex; justify-content: center; gap: 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--card-bg); }
+        .stat-item { flex: 1; padding: 2.5rem 2rem; text-align: center; border-right: 1px solid var(--border); }
+        .stat-item:last-child { border-right: none; }
+        .stat-num-wrap { font-size: 3rem; font-weight: 800; letter-spacing: -.05em; color: var(--accent); line-height: 1; display: flex; align-items: baseline; justify-content: center; gap: .1rem; }
+        .stat-unit { font-size: 1.5rem; font-weight: 700; }
+        .stat-label { color: var(--muted); font-size: .82rem; margin-top: .5rem; }
+
+        /* MARQUEE */
+        .marquee-wrap { background: var(--accent); padding: .9rem 0; overflow: hidden; }
+        .marquee-track { display: flex; animation: marquee 22s linear infinite; white-space: nowrap; width: max-content; }
+        .marquee-item { color: var(--bg); font-weight: 700; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; padding: 0 2.5rem; display: flex; align-items: center; gap: 2.5rem; flex-shrink: 0; }
+        .marquee-item::after { content: '●'; font-size: .4rem; opacity: .5; }
+        @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+        @keyframes marquee-rev { from{transform:translateX(-50%)} to{transform:translateX(0)} }
+        .marquee-rev { background: var(--bg); border-top: 1px solid rgba(170,255,0,.12); border-bottom: 1px solid rgba(170,255,0,.12); }
+        .marquee-rev .marquee-track { animation: marquee-rev 30s linear infinite; }
+        .marquee-rev .marquee-item { color: var(--accent); opacity: .65; }
+
+        /* SECTION DIVIDER */
+        .sec-divider { height: 1px; background: linear-gradient(to right, transparent, rgba(170,255,0,.25), transparent); margin: 0 3rem; }
+
+        /* STEPS GLOW DOT */
+        #steps-glow-dot { display: none; position: absolute; left: 19px; top: 0; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); filter: blur(5px); opacity: 0; pointer-events: none; z-index: 2; }
+
+        /* CARDS DOTS */
+        .cards-dots { display: none; }
+        .cdot { width: 6px; height: 6px; border-radius: 50%; background: rgba(170,255,0,.2); transition: all .25s ease; flex-shrink: 0; }
+        .cdot.active { background: #AAFF00; width: 16px; border-radius: 3px; box-shadow: 0 0 8px rgba(170,255,0,.45); }
+
+        /* SECTIONS */
+        .section-wrap { padding: 8rem 4rem; }
+        .section-inner { max-width: 1200px; margin: 0 auto; }
+        .label { color: var(--accent); font-size: .72rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 1rem; display: block; }
+        .section-title { font-size: clamp(1.9rem, 3.8vw, 3.2rem); font-weight: 700; letter-spacing: -.035em; line-height: 1.08; margin-bottom: .9rem; }
+        .section-sub { color: var(--muted); font-size: 1rem; max-width: 480px; line-height: 1.7; margin-bottom: 4rem; }
+
+        /* NOSOTROS */
+        #nosotros { background: #0b0b0b; }
+        .nosotros-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+        .nosotros-body { color: var(--muted); font-size: 1rem; line-height: 1.85; margin-top: 1.6rem; }
+        .nosotros-mascot-wrap { width: 340px; margin: 0 auto; }
+
+        /* CARDS */
+        #servicios { background: var(--bg); }
+        .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 22px; padding: 2.2rem; position: relative; overflow: hidden; transition: border-color .3s, box-shadow .3s; transform-style: preserve-3d; }
+        .card::before { content: ''; position: absolute; inset: 0; border-radius: 22px; background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(170,255,0,.06) 0%, transparent 60%); opacity: 0; transition: opacity .3s; pointer-events: none; }
+        .card:not(.disabled):hover { border-color: rgba(170,255,0,.4); box-shadow: 0 0 40px rgba(170,255,0,.06); }
+        .card:not(.disabled):hover::before { opacity: 1; }
+        @keyframes featuredPulse {
+            0%, 100% { box-shadow: 0 0 48px rgba(170,255,0,.10), 0 0 100px rgba(170,255,0,.04); }
+            50%       { box-shadow: 0 0 72px rgba(170,255,0,.20), 0 0 140px rgba(170,255,0,.08); }
+        }
+        .card.featured { border-color: rgba(170,255,0,.7); background: linear-gradient(140deg, #0f0f0f 0%, #131b07 100%); box-shadow: 0 0 48px rgba(170,255,0,.10), 0 0 100px rgba(170,255,0,.04); animation: featuredPulse 3.2s ease-in-out infinite; }
+        .card.featured:hover { border-color: rgba(170,255,0,.9); }
+        .card-badge { position: absolute; top: 1.4rem; right: 1.4rem; font-size: .62rem; font-weight: 700; letter-spacing: .1em; padding: .28rem .8rem; border-radius: 100px; text-transform: uppercase; }
+        .badge-pop { background: var(--accent); color: var(--bg); }
+        .badge-soon { background: var(--border); color: var(--muted); }
+        .badge-hot { background: rgba(255,255,255,.08); color: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.1); }
+        .card.disabled { opacity: .4; pointer-events: none; }
+        .card.disabled .card-btn { pointer-events: auto; }
+        .card-tier { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: .6rem; }
+        .card-name { font-size: 1.45rem; font-weight: 700; letter-spacing: -.025em; margin-bottom: .4rem; }
+        .card-desc { color: var(--muted); font-size: .85rem; margin-bottom: 1.6rem; line-height: 1.5; }
+        .card-list { list-style: none; display: flex; flex-direction: column; gap: .65rem; margin-bottom: 2rem; }
+        .card-list li { display: flex; align-items: flex-start; gap: .65rem; font-size: .88rem; line-height: 1.45; }
+        .card-list li::before { content: '✓'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+        .card-btn { display: block; text-align: center; padding: .82rem; border-radius: 12px; font-weight: 600; font-size: .88rem; text-decoration: none; transition: all .2s; font-family: 'Space Grotesk', sans-serif; }
+        .btn-outline { border: 1px solid var(--border); color: var(--text); }
+        .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-fill { background: var(--accent); color: var(--bg); }
+        .btn-fill:hover { box-shadow: 0 8px 28px rgba(170,255,0,.35); transform: translateY(-2px); }
+
+        /* PROCESO */
+        #proceso { background: var(--bg); }
+        .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 3rem; margin-top: 4rem; position: relative; }
+        .steps::before { content: ''; position: absolute; top: 27px; left: calc(16.66% + 2rem); right: calc(16.66% + 2rem); height: 1px; background: linear-gradient(to right, var(--accent), rgba(170,255,0,.1), var(--accent)); opacity: .2; }
+        .step-num { width: 54px; height: 54px; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .95rem; font-weight: 700; color: var(--accent); margin-bottom: 1.5rem; background: var(--bg); position: relative; z-index: 1; transition: border-color .3s, box-shadow .3s; }
+        .step:hover .step-num { border-color: var(--accent); box-shadow: 0 0 20px rgba(170,255,0,.2); }
+        .step-title { font-size: 1.15rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: .7rem; }
+        .step-body { color: var(--muted); font-size: .88rem; line-height: 1.65; }
+
+        /* CTA */
+        #contacto { background: #0b0b0b; }
+        .cta-outer { position: relative; }
+        .cta-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 28px; padding: 5.5rem 4rem; text-align: center; position: relative; overflow: hidden; z-index: 2; }
+        .cta-box::before { content: ''; position: absolute; top: -40%; left: 50%; transform: translateX(-50%); width: 600px; height: 400px; background: radial-gradient(ellipse, rgba(170,255,0,.08) 0%, transparent 70%); pointer-events: none; }
+        .cta-box .section-sub { margin: 0 auto 2.8rem; text-align: center; }
+        .cta-actions { display: flex; gap: 1rem; justify-content: center; align-items: center; }
+        .cta-peek { position: absolute; top: -130px; width: 200px; z-index: 4; pointer-events: none; filter: drop-shadow(0 0 14px rgba(170,255,0,.45)); }
+        .cta-peek-r { right: 80px; }
+        .cta-peek-l { left: 80px; }
+        .cta-peek-c { left: calc(50% - 100px); }
+        .cta-peek svg { width: 100%; height: 100%; overflow: visible; }
+
+        /* FOOTER */
+        footer { border-top: 1px solid var(--border); padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center; }
+        .footer-logo { font-weight: 800; color: var(--text); font-size: 1.1rem; letter-spacing: -.03em; }
+        .footer-logo span { color: var(--accent); }
+        footer p { color: var(--muted); font-size: .82rem; }
+        .footer-social { display: flex; gap: 1.2rem; }
+        .footer-social a { color: var(--muted); font-size: .82rem; text-decoration: none; transition: color .2s; }
+        .footer-social a:hover { color: var(--accent); }
+
+        /* REVEAL */
+        .reveal { opacity: 0; transform: translateY(36px); }
+        .card-reveal { opacity: 0; transform: translateY(36px); }
+
+        /* DOT GRID */
+        #dot-grid { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+        /* MOBILE COMPANION */
+        #mobile-companion { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 500; width: 72px; height: 72px; filter: drop-shadow(0 0 12px rgba(170,255,0,.5)); pointer-events: none; display: none; }
+        #mobile-companion svg { width: 100%; height: 100%; }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            nav { padding: 1.2rem 1.5rem; }
+            .nav-links li:not(:last-child) { display: none; }
+            #hero { padding: 6rem 1.5rem 4rem; }
+            .hero-content { grid-template-columns: 1fr; text-align: center; }
+            .hero-mascot { order: -1; }
+            .mascot-wrap { width: 220px; height: 220px; }
+            .hero-sub { margin: 0 auto 2.5rem; }
+            .hero-actions { justify-content: center; flex-wrap: wrap; }
+            .scroll-hint { display: none; }
+            .cursor { display: none; }
+            .stats-strip { flex-direction: column; }
+            .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
+            .section-wrap { padding: 5rem 1.5rem; }
+            .cards-grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 1rem; padding-bottom: 1.5rem; padding-left: 12.5vw; padding-right: 12.5vw; margin-left: -1.5rem; margin-right: -1.5rem; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+            .cards-grid::-webkit-scrollbar { display: none; }
+            .card { flex: 0 0 75vw; scroll-snap-align: center; min-width: 0; }
+            .cards-dots { display: flex; justify-content: center; align-items: center; gap: .45rem; margin-top: 1.1rem; }
+            .steps { grid-template-columns: 1fr; gap: 0; }
+            .steps::before { display: none; }
+            .steps::after { content: ''; position: absolute; left: 26px; top: 27px; bottom: 27px; width: 1px; background: linear-gradient(to bottom, transparent 0%, rgba(170,255,0,.5) 18%, rgba(170,255,0,.3) 82%, transparent 100%); z-index: 0; }
+            .step { display: grid; grid-template-columns: 54px 1fr; column-gap: 1rem; padding-bottom: 2.5rem; }
+            .step:last-child { padding-bottom: 0; }
+            .step-num { grid-column: 1; grid-row: 1; margin-bottom: 0; align-self: start; position: relative; z-index: 1; background: var(--bg); }
+            .step-title { grid-column: 2; grid-row: 1; align-self: center; font-size: 1.05rem; margin-bottom: .25rem; }
+            .step-body { grid-column: 2; grid-row: 2; }
+            .nosotros-grid { grid-template-columns: 1fr; gap: 3rem; }
+            .nosotros-mascot-wrap { width: 100%; max-width: 170px; margin: 0 auto; }
+            footer { padding: 1.5rem; flex-direction: column; gap: .8rem; text-align: center; }
+            .cta-box { padding: 3rem 1.5rem; }
+            .cta-outer { padding-top: 90px; }
+            .cta-actions { flex-direction: column; }
+            #companion-wrap, .cta-peek-r, .cta-peek-l { display: none; }
+            .cta-peek-c { display: block; top: -75px; width: 130px; left: calc(50% - 65px); }
+            #dot-grid { display: none; }
+            #mobile-companion { display: block; }
+            #steps-glow-dot { display: block; }
+            .cards-hint { display: flex; align-items: center; justify-content: center; gap: .6rem; margin: 1.1rem auto 0; width: fit-content; color: rgba(170,255,0,.85); font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; pointer-events: none; background: rgba(170,255,0,.08); border: 1px solid rgba(170,255,0,.22); border-radius: 100px; padding: .45rem 1.1rem; position: relative; z-index: 5; }
+            .cards-hint .hint-arr { display: inline-block; font-size: .85rem; line-height: 1; }
+            .card:not(.disabled) { border-color: rgba(170,255,0,.28); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="loader">
+    <div class="loader-logo">bimm<span>.</span></div>
+    <div class="loader-bar"><div class="loader-fill" id="loaderFill"></div></div>
+</div>
+
+<canvas id="dot-grid"></canvas>
+<div class="cursor" id="cursor"></div>
+
+<!-- COMPANION: cabeza + bracitos -->
+<div id="companion-wrap">
+    <div id="companion-inner">
+        <svg viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+            <ellipse id="comp-arm-l" cx="44" cy="100" rx="12" ry="20" fill="#AAFF00"/>
+            <ellipse id="comp-arm-r" cx="156" cy="100" rx="12" ry="20" fill="#AAFF00"/>
+            <ellipse cx="132" cy="32" rx="13" ry="20" fill="#AAFF00"/>
+            <ellipse cx="100" cy="85" rx="60" ry="58" fill="#AAFF00"/>
+            <path id="comp-happy-eye-l" d="M 67 88 Q 75 81 83 88" stroke="white" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="0"/>
+            <path id="comp-happy-eye-r" d="M 117 88 Q 125 81 133 88" stroke="white" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="0"/>
+            <circle class="eye-dot" id="comp-eye-l" cx="75" cy="91" r="7.5" fill="white"/>
+            <circle class="eye-dot" id="comp-eye-r" cx="125" cy="91" r="7.5" fill="white"/>
+            <path id="comp-mouth" d="M 82 107 Q 100 119 118 107" stroke="#1a1a1a" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0"/>
+        </svg>
+    </div>
+</div>
+
+<!-- MOBILE COMPANION -->
+<div id="mobile-companion">
+    <svg viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <ellipse id="mob-arm-l" cx="44" cy="100" rx="12" ry="20" fill="#AAFF00"/>
+        <ellipse id="mob-arm-r" cx="156" cy="100" rx="12" ry="20" fill="#AAFF00"/>
+        <ellipse cx="132" cy="32" rx="13" ry="20" fill="#AAFF00"/>
+        <ellipse cx="100" cy="85" rx="60" ry="58" fill="#AAFF00"/>
+        <path id="mob-happy-eye-l" d="M 67 88 Q 75 81 83 88" stroke="white" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="0"/>
+        <path id="mob-happy-eye-r" d="M 117 88 Q 125 81 133 88" stroke="white" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="0"/>
+        <circle id="mob-eye-l" cx="75" cy="91" r="7.5" fill="white"/>
+        <circle id="mob-eye-r" cx="125" cy="91" r="7.5" fill="white"/>
+        <path id="mob-mouth" d="M 82 107 Q 100 119 118 107" stroke="#1a1a1a" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0"/>
+    </svg>
+</div>
+
+<nav id="navbar">
+    <a href="#" class="nav-logo">bimm<span>.</span></a>
+    <ul class="nav-links">
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#proceso">Cómo funciona</a></li>
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#contacto" class="nav-cta">Empezar ahora</a></li>
+    </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+    <div class="hero-content">
+        <div class="hero-text">
+            <div class="hero-badge">Diseño a medida, sin plantillas</div>
+            <h1 class="hero-title">
+                Tu negocio<br>
+                <span class="accent">existe.</span><br>
+                Ahora se ve.
+            </h1>
+            <p class="hero-sub">Diseñamos la presencia digital de tu negocio local. Web profesional, automatizaciones inteligentes y resultados reales desde el primer día.</p>
+            <div class="hero-actions">
+                <a href="#contacto" class="btn-primary">Quiero mi web</a>
+                <a href="#servicios" class="btn-ghost">Ver paquetes</a>
+            </div>
+        </div>
+        <div class="hero-mascot">
+            <div class="mascot-wrap">
+                <div class="mascot-halo"></div>
+                <svg class="mascot-svg" id="heroSvg" viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse id="hero-arm-r" cx="173" cy="100" rx="20" ry="10" fill="#AAFF00" opacity="0"/>
+                    <ellipse cx="132" cy="48" rx="14" ry="22" fill="#AAFF00"/>
+                    <ellipse cx="100" cy="100" rx="60" ry="58" fill="#AAFF00"/>
+                    <path id="hero-happy-eye-l" d="M 67 102 Q 75 95 83 102" stroke="white" stroke-width="5" fill="none" stroke-linecap="round" opacity="0"/>
+                    <path id="hero-happy-eye-r" d="M 117 102 Q 125 95 133 102" stroke="white" stroke-width="5" fill="none" stroke-linecap="round" opacity="0"/>
+                    <circle class="eye-dot" id="hero-eye-l" cx="75" cy="106" r="8" fill="white"/>
+                    <circle class="eye-dot" id="hero-eye-r" cx="125" cy="106" r="8" fill="white"/>
+                    <path id="hero-mouth" d="M 82 121 Q 100 134 118 121" stroke="#1a1a1a" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div class="scroll-hint">
+        <span>scroll</span>
+        <div class="scroll-hint-line"></div>
+    </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+    <div class="stat-item reveal">
+        <div class="stat-num-wrap"><span class="stat-num" data-target="48">0</span><span class="stat-unit">hs</span></div>
+        <p class="stat-label">Tiempo de respuesta</p>
+    </div>
+    <div class="stat-item reveal">
+        <div class="stat-num-wrap"><span class="stat-num" data-target="10">0</span><span class="stat-unit"> días</span></div>
+        <p class="stat-label">Para tener tu web online</p>
+    </div>
+    <div class="stat-item reveal">
+        <div class="stat-num-wrap"><span class="stat-num" data-target="100">0</span><span class="stat-unit">%</span></div>
+        <p class="stat-label">A medida, sin plantillas</p>
+    </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+    <div class="marquee-track">
+        <div class="marquee-item">Páginas Web</div>
+        <div class="marquee-item">Automatización WhatsApp</div>
+        <div class="marquee-item">Respuestas en Instagram</div>
+        <div class="marquee-item">Tienda Online</div>
+        <div class="marquee-item">Diagnóstico Digital</div>
+        <div class="marquee-item">Tu Negocio Online</div>
+        <div class="marquee-item">bimm.</div>
+        <div class="marquee-item">Páginas Web</div>
+        <div class="marquee-item">Automatización WhatsApp</div>
+        <div class="marquee-item">Respuestas en Instagram</div>
+        <div class="marquee-item">Tienda Online</div>
+        <div class="marquee-item">Diagnóstico Digital</div>
+        <div class="marquee-item">Tu Negocio Online</div>
+        <div class="marquee-item">bimm.</div>
+    </div>
+</div>
+
+<hr class="sec-divider" aria-hidden="true">
+
+<!-- NOSOTROS -->
+<section id="nosotros" class="section-wrap">
+    <div class="section-inner">
+        <div class="nosotros-grid">
+            <div class="nosotros-text">
+                <span class="label reveal">Quiénes somos</span>
+                <h2 class="section-title reveal">Sin agencias.<br>Sin plantillas.</h2>
+                <p class="nosotros-body reveal">Hacemos webs y automatizaciones para negocios locales. Diseño a medida, entrega rápida, y alguien del otro lado que responde cuando escribís. Sin procesos eternos ni presupuestos que asustan.</p>
+            </div>
+            <div class="nosotros-mascot-wrap reveal">
+                <svg id="nosotrosSvg" viewBox="0 0 260 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;filter:drop-shadow(0 0 28px rgba(170,255,0,.45));overflow:visible">
+                    <!-- Bimmi: en reposo oculto detrás del laptop, animado hacia arriba con y -->
+                    <g id="bimmi-group">
+                        <ellipse cx="139" cy="173" rx="13" ry="20" fill="#AAFF00"/>
+                        <ellipse id="nosotros-head" cx="107" cy="230" rx="60" ry="58" fill="#AAFF00"/>
+                        <circle id="nosotros-eye-l" cx="82" cy="230" r="8" fill="white"/>
+                        <circle id="nosotros-eye-r" cx="132" cy="230" r="8" fill="white"/>
+                        <path id="nosotros-happy-eye-l" d="M 74 228 Q 82 221 90 228" stroke="white" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="0"/>
+                        <path id="nosotros-happy-eye-r" d="M 124 228 Q 132 221 140 228" stroke="white" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="0"/>
+                        <path id="nosotros-mouth" d="M 74 245 Q 107 258 140 245" stroke="#1a1a1a" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0"/>
+                    </g>
+                    <!-- Laptop encima del bimmi en z-order: lo tapa cuando está escondido -->
+                    <rect x="5" y="110" width="205" height="180" rx="13" fill="#131313"/>
+                    <rect x="5" y="110" width="205" height="12" rx="7" fill="#1c1c1c"/>
+                    <rect x="2" y="288" width="213" height="9" rx="4" fill="#171717"/>
+                    <rect x="0" y="295" width="217" height="18" rx="9" fill="#101010"/>
+                    <!-- Marca sutil en la tapa (dorso del laptop) -->
+                    <circle cx="107" cy="200" r="9" fill="#181818"/>
+                    <circle cx="107" cy="200" r="5" fill="#1d1d1d"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+</section>
+
+<hr class="sec-divider" aria-hidden="true">
+
+<!-- PROCESO -->
+<section id="proceso" class="section-wrap">
+    <div class="section-inner">
+        <span class="label reveal">El proceso</span>
+        <h2 class="section-title reveal">Simple. Rápido. Sin vueltas.</h2>
+        <p class="section-sub reveal">Del "quiero una web" a tenerla publicada en días, no meses.</p>
+        <div class="steps">
+            <div id="steps-glow-dot" aria-hidden="true"></div>
+            <div class="step reveal">
+                <div class="step-num">01</div>
+                <h3 class="step-title">Nos contactás</h3>
+                <p class="step-body">Contanos qué hace tu negocio y qué necesitás. Sin formularios eternos — un mensaje alcanza.</p>
+            </div>
+            <div class="step reveal">
+                <div class="step-num">02</div>
+                <h3 class="step-title">Nosotros diseñamos</h3>
+                <p class="step-body">Armamos tu web y automatizaciones a medida. Vos aprobás. Si algo no te convence, lo cambiamos.</p>
+            </div>
+            <div class="step reveal">
+                <div class="step-num">03</div>
+                <h3 class="step-title">Tu negocio online</h3>
+                <p class="step-body">Publicamos todo y te entregamos acceso completo. Tu negocio trabaja solo mientras vos hacés lo tuyo.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEPARADOR -->
+<div class="marquee-wrap marquee-rev" aria-hidden="true">
+    <div class="marquee-track">
+        <div class="marquee-item">Diseño Personalizado</div>
+        <div class="marquee-item">Entrega Rápida</div>
+        <div class="marquee-item">Sin Plantillas</div>
+        <div class="marquee-item">Soporte Incluido</div>
+        <div class="marquee-item">100% a Medida</div>
+        <div class="marquee-item">bimm.</div>
+        <div class="marquee-item">Diseño Personalizado</div>
+        <div class="marquee-item">Entrega Rápida</div>
+        <div class="marquee-item">Sin Plantillas</div>
+        <div class="marquee-item">Soporte Incluido</div>
+        <div class="marquee-item">100% a Medida</div>
+        <div class="marquee-item">bimm.</div>
+    </div>
+</div>
+
+<!-- SERVICIOS -->
+<section id="servicios" class="section-wrap">
+    <div class="section-inner">
+        <span class="label reveal">Lo que hacemos</span>
+        <h2 class="section-title reveal">Elegí tu paquete.<br>Nosotros hacemos el resto.</h2>
+        <p class="section-sub reveal">Precios claros. Sin sorpresas. Sin letra chica.</p>
+        <div class="cards-grid">
+            <div class="card card-reveal">
+                <span class="card-badge badge-hot">Más buscado</span>
+                <p class="card-tier">Mini</p>
+                <h3 class="card-name">Tienda Online</h3>
+                <p class="card-desc">Para emprendimientos que quieren vender sin dominio propio ni complejidades.</p>
+                <ul class="card-list">
+                    <li>Setup completo en Tienda Nube</li>
+                    <li>Diseño de la tienda a medida</li>
+                    <li>Carga de primeros productos</li>
+                    <li>Integración con WhatsApp Business</li>
+                    <li>Entrega en 72 hs</li>
+                </ul>
+                <a href="#contacto" class="card-btn btn-fill">Consultar precio</a>
+            </div>
+            <div class="card card-reveal">
+                <p class="card-tier">Starter</p>
+                <h3 class="card-name">Web Profesional</h3>
+                <p class="card-desc">Presencia digital desde cero. Sin plantillas, sin atajos.</p>
+                <ul class="card-list">
+                    <li>Diseño personalizado</li>
+                    <li>Hasta 5 secciones</li>
+                    <li>Formulario de contacto</li>
+                    <li>100% adaptado a mobile</li>
+                    <li>Entrega en 10 días hábiles</li>
+                </ul>
+                <a href="#contacto" class="card-btn btn-fill">Consultar precio</a>
+            </div>
+            <div class="card featured card-reveal">
+                <span class="card-badge badge-pop">Más popular</span>
+                <p class="card-tier">Pro</p>
+                <h3 class="card-name">Web + Automatización</h3>
+                <p class="card-desc">Tu negocio responde solo. Las 24hs. Sin que hagas nada.</p>
+                <ul class="card-list">
+                    <li>Todo lo del Starter</li>
+                    <li>Chatbot en WhatsApp Business</li>
+                    <li>Respuestas automáticas en Instagram</li>
+                    <li>Flujo de bienvenida + FAQ</li>
+                    <li>Clientes atendidos 24/7</li>
+                </ul>
+                <a href="#contacto" class="card-btn btn-fill">Consultar precio</a>
+            </div>
+            <div class="card disabled card-reveal">
+                <span class="card-badge badge-soon">Próximamente</span>
+                <p class="card-tier">Élite</p>
+                <h3 class="card-name">Automatización Avanzada</h3>
+                <p class="card-desc">Para negocios que quieren escalar sin contratar más gente.</p>
+                <ul class="card-list">
+                    <li>Todo lo del Pro</li>
+                    <li>Captación automática de leads</li>
+                    <li>Integración Google Sheets / CRM</li>
+                    <li>Seguimientos automáticos</li>
+                    <li>Reportes semanales automáticos</li>
+                </ul>
+                <a href="#contacto" class="card-btn btn-outline">Avisame cuando esté</a>
+            </div>
+        </div>
+        <div class="cards-dots" id="cardsDots" aria-hidden="true">
+            <span class="cdot"></span>
+            <span class="cdot"></span>
+            <span class="cdot"></span>
+            <span class="cdot"></span>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto" class="section-wrap">
+    <div class="section-inner">
+        <div class="cta-outer">
+            <div class="cta-box reveal">
+                <span class="label" style="display:block;text-align:center">¿Listo para empezar?</span>
+                <h2 class="section-title">Tu web puede estar<br>lista esta semana.</h2>
+                <p class="section-sub">Escribinos por WhatsApp y en menos de 24hs te decimos exactamente cómo arrancamos.</p>
+                <div class="cta-actions">
+                    <a href="https://wa.me/TUNUMERO" class="btn-primary">Escribirnos por WhatsApp</a>
+                    <a href="mailto:contact@bimm.design" class="btn-ghost">Mandar un mail</a>
+                </div>
+            </div>
+            <!-- peek derecha -->
+            <div class="cta-peek cta-peek-r" aria-hidden="true">
+                <svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+                    <ellipse cx="132" cy="48" rx="14" ry="22" fill="#AAFF00"/>
+                    <ellipse cx="100" cy="100" rx="60" ry="58" fill="#AAFF00"/>
+                    <circle id="peek-r-eye-l" cx="75" cy="106" r="8" fill="white"/>
+                    <circle id="peek-r-eye-r" cx="125" cy="106" r="8" fill="white"/>
+                    <path id="peek-r-mouth" d="M 82 121 Q 100 134 118 121" stroke="#1a1a1a" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0"/>
+                </svg>
+            </div>
+            <!-- peek izquierda -->
+            <div class="cta-peek cta-peek-l" aria-hidden="true">
+                <svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+                    <ellipse cx="68" cy="48" rx="14" ry="22" fill="#AAFF00"/>
+                    <ellipse cx="100" cy="100" rx="60" ry="58" fill="#AAFF00"/>
+                    <circle id="peek-l-eye-l" cx="75" cy="106" r="8" fill="white"/>
+                    <circle id="peek-l-eye-r" cx="125" cy="106" r="8" fill="white"/>
+                    <path id="peek-l-mouth" d="M 82 121 Q 100 134 118 121" stroke="#1a1a1a" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0"/>
+                </svg>
+            </div>
+            <!-- peek centro -->
+            <div class="cta-peek cta-peek-c" aria-hidden="true">
+                <svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+                    <ellipse cx="132" cy="48" rx="14" ry="22" fill="#AAFF00"/>
+                    <ellipse cx="100" cy="100" rx="60" ry="58" fill="#AAFF00"/>
+                    <circle id="peek-c-eye-l" cx="75" cy="106" r="8" fill="white"/>
+                    <circle id="peek-c-eye-r" cx="125" cy="106" r="8" fill="white"/>
+                    <path id="peek-c-mouth" d="M 82 121 Q 100 134 118 121" stroke="#1a1a1a" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <span class="footer-logo">bimm<span>.</span></span>
+    <p>© 2026 bimm. — Diseño web para tu negocio</p>
+    <div class="footer-social">
+        <a href="https://instagram.com/bimm.designn" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://wa.me/TUNUMERO" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="mailto:contact@bimm.design">contact@bimm.design</a>
+    </div>
+</footer>
+
+<script>
+const isMobile = window.innerWidth <= 900;
+
+// LOADER
+const loaderFill = document.getElementById('loaderFill');
+gsap.to(loaderFill, {
+    width: '100%', duration: .9, ease: 'power2.inOut',
+    onComplete() {
+        gsap.to('#loader', { opacity: 0, duration: .4, delay: .15,
+            onComplete() { document.getElementById('loader').style.display = 'none'; }
+        });
+    }
+});
+
+// MOUSE
+let mx = window.innerWidth * .5, my = window.innerHeight * .5;
+let lastMouseMove = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; lastMouseMove = Date.now(); });
+
+// CURSOR
+const cursorEl = document.getElementById('cursor');
+document.addEventListener('mousemove', e => { cursorEl.style.left = e.clientX + 'px'; cursorEl.style.top = e.clientY + 'px'; });
+document.querySelectorAll('a,button').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursorEl.style.width = '20px'; cursorEl.style.height = '20px'; });
+    el.addEventListener('mouseleave', () => { cursorEl.style.width = '10px'; cursorEl.style.height = '10px'; });
+});
+
+// COMET TRAIL
+const trailCvs = document.createElement('canvas');
+trailCvs.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9997;' + (isMobile ? 'display:none' : '');
+document.body.appendChild(trailCvs);
+const tctx = trailCvs.getContext('2d');
+function resizeTrail() { trailCvs.width = window.innerWidth; trailCvs.height = window.innerHeight; }
+resizeTrail(); window.addEventListener('resize', resizeTrail);
+const trailPts = [];
+;(function drawTrail() {
+    tctx.clearRect(0, 0, trailCvs.width, trailCvs.height);
+    trailPts.unshift({ x: mx, y: my });
+    if (trailPts.length > 18) trailPts.pop();
+    trailPts.forEach((pt, i) => {
+        const t = 1 - i / 18;
+        tctx.beginPath(); tctx.arc(pt.x, pt.y, t * 5.5 + .5, 0, Math.PI * 2);
+        tctx.fillStyle = `rgba(170,255,0,${t * 0.6})`; tctx.fill();
+    });
+    requestAnimationFrame(drawTrail);
+})();
+
+// NAVBAR
+window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+
+// AMBIENT PARTICLES
+const cvs = document.getElementById('dot-grid');
+const ctx = cvs.getContext('2d');
+const NUM_P = 72;
+let particles = [];
+function initParticles() {
+    particles = [];
+    for (let i = 0; i < NUM_P; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const spd = 0.12 + Math.random() * 0.22;
+        particles.push({
+            x: Math.random() * cvs.width, y: Math.random() * cvs.height,
+            vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+            r: 1.1 + Math.random() * 1.3, op: 0.1 + Math.random() * 0.18
+        });
+    }
+}
+function resizeCvs() { cvs.width = window.innerWidth; cvs.height = window.innerHeight; initParticles(); }
+resizeCvs(); window.addEventListener('resize', resizeCvs);
+;(function drawParticles() {
+    ctx.clearRect(0, 0, cvs.width, cvs.height);
+    particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < -10) p.x = cvs.width + 10;
+        if (p.x > cvs.width + 10) p.x = -10;
+        if (p.y < -10) p.y = cvs.height + 10;
+        if (p.y > cvs.height + 10) p.y = -10;
+        const dx = p.x - mx, dy = p.y - my;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        let op = p.op, r = p.r, px = p.x, py = p.y;
+        if (dist < 130) {
+            const f = 1 - dist/130;
+            const a = Math.atan2(dy, dx);
+            px = p.x + Math.cos(a)*f*32; py = p.y + Math.sin(a)*f*32;
+            op = p.op + f * 0.55; r = p.r + f * 2.2;
+        }
+        ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(170,255,0,${op})`; ctx.fill();
+    });
+    requestAnimationFrame(drawParticles);
+})();
+
+// HERO EYES
+const heroEyeL = document.getElementById('hero-eye-l');
+const heroEyeR = document.getElementById('hero-eye-r');
+const heroSvg  = document.getElementById('heroSvg');
+let isHeroWaving = false;
+document.addEventListener('mousemove', () => {
+    if (isHeroWaving) return;
+    const rect = heroSvg.getBoundingClientRect();
+    const svgCx = rect.left + rect.width * .5;
+    const svgCy = rect.top + rect.height * .55;
+    const dx = mx - svgCx, dy = my - svgCy;
+    const dist = Math.sqrt(dx*dx+dy*dy);
+    const nx = dist > 0 ? dx/dist : 0, ny = dist > 0 ? dy/dist : 0;
+    const move = Math.min(1, dist/180) * 6.5;
+    heroEyeL.setAttribute('cx', 75 + nx*move); heroEyeL.setAttribute('cy', 106 + ny*move);
+    heroEyeR.setAttribute('cx', 125 + nx*move); heroEyeR.setAttribute('cy', 106 + ny*move);
+});
+
+// HERO WAVE — re-dispara cada vez que el hero entra en pantalla
+function doHeroWave() {
+    if (isHeroWaving) return;
+    isHeroWaving = true;
+    heroEyeL.setAttribute('cx', '75'); heroEyeL.setAttribute('cy', '106');
+    heroEyeR.setAttribute('cx', '125'); heroEyeR.setAttribute('cy', '106');
+    gsap.timeline({ onComplete: () => { isHeroWaving = false; } })
+        .set('#hero-arm-r', { rotation: 12, svgOrigin: '160 100' })
+        .to([heroEyeL, heroEyeR], { opacity: 0, duration: .2 })
+        .to(['#hero-happy-eye-l', '#hero-happy-eye-r'], { opacity: 1, duration: .2 }, '<')
+        .to('#hero-mouth', { opacity: 1, duration: .15 }, '<')
+        .to('#hero-arm-r', { opacity: 1, duration: .12 }, '<')
+        .to('#hero-arm-r', { rotation: -30, svgOrigin: '160 100', duration: .2, yoyo: true, repeat: 5, ease: 'sine.inOut' })
+        .to([heroEyeL, heroEyeR], { opacity: 1, duration: .25, ease: 'back.out(2)' }, '+=.8')
+        .to(['#hero-happy-eye-l', '#hero-happy-eye-r'], { opacity: 0, duration: .25 }, '<')
+        .to('#hero-mouth', { opacity: 0, duration: .3 }, '<')
+        .to('#hero-arm-r', { opacity: 0, rotation: 12, svgOrigin: '160 100', duration: .25, ease: 'power2.out' }, '<');
+}
+gsap.delayedCall(1.5, doHeroWave);
+ScrollTrigger.create({
+    trigger: '#hero',
+    start: 'bottom top',
+    onEnterBack: () => { gsap.delayedCall(.3, doHeroWave); }
+});
+if (isMobile) {
+    function scheduleHeroSmile() {
+        gsap.delayedCall(5 + Math.random() * 5, () => {
+            if (!isHeroWaving) doHeroWave();
+            scheduleHeroSmile();
+        });
+    }
+    gsap.delayedCall(4, scheduleHeroSmile);
+}
+
+// COMPANION
+const compWrap  = document.getElementById('companion-wrap');
+const compInner = document.getElementById('companion-inner');
+const compEyeL  = document.getElementById('comp-eye-l');
+const compEyeR  = document.getElementById('comp-eye-r');
+let compX = window.innerWidth * .75, compY = window.innerHeight * .5;
+let lastCelebration = 0, isCelebrating = false, isChasing = false;
+let wobbleTween = null, armLTween = null, armRTween = null;
+
+gsap.set(compWrap, { opacity: 0, scale: 0 });
+setTimeout(() => {
+    gsap.to(compWrap, { opacity: 1, scale: 1, duration: .8, ease: 'back.out(2)' });
+}, 1400);
+
+;(function trackComp() {
+    const dx = mx - compX, dy = my - compY;
+    const dist = Math.sqrt(dx*dx+dy*dy);
+    const cursorActive = Date.now() - lastMouseMove < 400;
+
+    if (cursorActive) { compX += dx * 0.013; compY += dy * 0.013; }
+    compX = Math.max(40, Math.min(window.innerWidth - 40, compX));
+    compY = Math.max(40, Math.min(window.innerHeight - 40, compY));
+    compWrap.style.left = (compX - 38) + 'px';
+    compWrap.style.top  = (compY - 34) + 'px';
+
+    const nx = dist > 0 ? dx/dist : 0, ny = dist > 0 ? dy/dist : 0;
+    const eyeMove = Math.min(1, dist/150) * 3;
+    if (!isCelebrating) {
+        compEyeL.setAttribute('cx', 75 + nx*eyeMove); compEyeL.setAttribute('cy', 91 + ny*eyeMove);
+        compEyeR.setAttribute('cx', 125 + nx*eyeMove); compEyeR.setAttribute('cy', 91 + ny*eyeMove);
+    }
+
+    if (dist > 130 && !isCelebrating && !isChasing) {
+        isChasing = true;
+        wobbleTween = gsap.to(compInner, { rotation: 8, duration: .2, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+        gsap.to([compEyeL, compEyeR], { scaleY: 0.18, duration: .18, overwrite: true, transformOrigin: '50% 50%' });
+        armLTween = gsap.to('#comp-arm-l', { rotation: -28, svgOrigin: '44 80', duration: .16, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+        armRTween = gsap.to('#comp-arm-r', { rotation: 28, svgOrigin: '156 80', duration: .16, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: .08 });
+    }
+    if (dist < 90 && isChasing && !isCelebrating) {
+        isChasing = false;
+        if (wobbleTween) { wobbleTween.kill(); wobbleTween = null; }
+        if (armLTween) { armLTween.kill(); armLTween = null; }
+        if (armRTween) { armRTween.kill(); armRTween = null; }
+        gsap.to(compInner, { rotation: 0, duration: .25 });
+        gsap.to([compEyeL, compEyeR], { scaleY: 1, duration: .2, overwrite: true, transformOrigin: '50% 50%' });
+        gsap.to('#comp-arm-l', { rotation: 0, duration: .3 });
+        gsap.to('#comp-arm-r', { rotation: 0, duration: .3 });
+    }
+
+    const now = Date.now();
+    if (dist < 48 && !isCelebrating && now - lastCelebration > 2800) {
+        celebrate(); lastCelebration = now;
+    }
+    requestAnimationFrame(trackComp);
+})();
+
+function celebrate() {
+    isCelebrating = true; isChasing = false;
+    if (wobbleTween) { wobbleTween.kill(); wobbleTween = null; }
+    if (armLTween) { armLTween.kill(); armLTween = null; }
+    if (armRTween) { armRTween.kill(); armRTween = null; }
+    gsap.to([compEyeL, compEyeR], { scaleY: 0.12, duration: .15, yoyo: true, repeat: 1, overwrite: true, transformBox: 'fill-box', transformOrigin: '50% 50%' });
+    gsap.to('#comp-mouth', { opacity: 1, duration: .1 });
+    spawnStars(compX, compY);
+    gsap.timeline({ onComplete: () => { isCelebrating = false; gsap.to('#comp-mouth', { opacity: 0, duration: .3 }); } })
+        .to(compInner, { rotation: 360, scale: 1.6, duration: .45, ease: 'back.out(2)' })
+        .to(compInner, { rotation: 0, scale: 1, duration: .35, ease: 'power2.out' });
+}
+
+function spawnStars(x, y) {
+    const symbols = ['✦','★','✸','◆','✺'];
+    for (let i = 0; i < 8; i++) {
+        const s = document.createElement('span');
+        s.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        s.style.cssText = `position:fixed;left:${x}px;top:${y}px;color:#AAFF00;font-size:${8+Math.random()*9}px;pointer-events:none;z-index:600;user-select:none;`;
+        document.body.appendChild(s);
+        const angle = (i/8)*Math.PI*2 + Math.random()*.4, d = 38 + Math.random()*32;
+        gsap.fromTo(s, { x:0, y:0, opacity:1, scale:1 },
+            { x:Math.cos(angle)*d, y:Math.sin(angle)*d-18, opacity:0, scale:0, duration:.65, ease:'power2.out', onComplete:()=>s.remove() });
+    }
+}
+
+// CARDS TILT
+document.querySelectorAll('.card:not(.disabled)').forEach(card => {
+    card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+        card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+        const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+        card.style.transform = `perspective(700px) rotateX(${-y*15}deg) rotateY(${x*15}deg) translateZ(22px)`;
+    });
+    card.addEventListener('mouseleave', () => { card.style.transform = 'perspective(700px) rotateX(0) rotateY(0) translateZ(0)'; });
+});
+
+// GSAP SCROLL
+gsap.registerPlugin(ScrollTrigger);
+gsap.utils.toArray('.reveal').forEach(el => {
+    gsap.fromTo(el, { opacity:0, y:36 },
+        { opacity:1, y:0, duration:.85, ease:'power2.out',
+          scrollTrigger: { trigger:el, start:'top 87%', toggleActions:'play none none none' } });
+});
+
+// Cards — entrada escalonada con Pro destacada
+const cardEls = Array.from(document.querySelectorAll('.card-reveal'));
+if (cardEls.length) {
+    ScrollTrigger.create({
+        trigger: '.cards-grid',
+        start: 'top 82%',
+        once: true,
+        onEnter: () => {
+            gsap.to(cardEls, {
+                opacity: (i, el) => el.classList.contains('disabled') ? 0.4 : 1,
+                y: 0,
+                duration: .75,
+                ease: 'power2.out',
+                stagger: .13
+            });
+            gsap.fromTo(cardEls[2],
+                { scale: .95 },
+                { scale: 1, duration: .9, ease: 'back.out(1.6)', delay: .13 * 2 }
+            );
+        }
+    });
+}
+gsap.utils.toArray('.stat-num').forEach(el => {
+    const target = parseInt(el.dataset.target);
+    gsap.fromTo(el, { textContent: 0 },
+        { textContent: target, duration: 2, ease: 'power1.out', snap: { textContent: 1 },
+          scrollTrigger: { trigger: el, start: 'top 85%' } });
+});
+gsap.fromTo('.hero-badge',   {opacity:0,y:16},{opacity:1,y:0,duration:.6,delay:.2});
+gsap.fromTo('.hero-title',   {opacity:0,y:40},{opacity:1,y:0,duration:.85,delay:.38});
+gsap.fromTo('.hero-sub',     {opacity:0,y:26},{opacity:1,y:0,duration:.7,delay:.56});
+gsap.fromTo('.hero-actions', {opacity:0,y:16},{opacity:1,y:0,duration:.6,delay:.72});
+gsap.fromTo('.mascot-wrap',  {opacity:0,scale:.7},{opacity:1,scale:1,duration:1.1,delay:.42,ease:'back.out(1.7)'});
+gsap.fromTo('.scroll-hint',  {opacity:0},{opacity:1,duration:.8,delay:1.4});
+
+// NOSOTROS BIMMI — se asoma desde detrás del laptop y saluda
+function nosotrosWaveOnce() {
+    return gsap.timeline()
+        .to('#bimmi-group', { y: -140, duration: .6, ease: 'back.out(1.4)' })
+        .to(['#nosotros-eye-l', '#nosotros-eye-r'], { opacity: 0, duration: .18 })
+        .to(['#nosotros-happy-eye-l', '#nosotros-happy-eye-r'], { opacity: 1, duration: .18 }, '<')
+        .to('#nosotros-mouth', { opacity: 1, duration: .15 }, '<')
+        .to(['#nosotros-eye-l', '#nosotros-eye-r'], { opacity: 1, duration: .22, ease: 'back.out(1.5)' }, '+=1.5')
+        .to(['#nosotros-happy-eye-l', '#nosotros-happy-eye-r'], { opacity: 0, duration: .22 }, '<')
+        .to('#nosotros-mouth', { opacity: 0, duration: .2 }, '<')
+        .to('#bimmi-group', { y: 0, duration: .55, ease: 'power2.inOut' }, '<+=.1');
+}
+let nosotrosLoopTl = null;
+function startNosotrosLoop() {
+    if (nosotrosLoopTl) nosotrosLoopTl.kill();
+    gsap.set(['#nosotros-eye-l', '#nosotros-eye-r'], { opacity: 1 });
+    gsap.set(['#nosotros-happy-eye-l', '#nosotros-happy-eye-r'], { opacity: 0 });
+    gsap.set('#nosotros-mouth', { opacity: 0 });
+    if (isMobile) {
+        gsap.set('#bimmi-group', { y: 0 });
+        nosotrosLoopTl = gsap.timeline({ repeat: -1, repeatDelay: 2 });
+        nosotrosLoopTl
+            .to('#bimmi-group', { y: -130, duration: .8, ease: 'back.out(1.4)' })
+            .to(['#nosotros-eye-l', '#nosotros-eye-r'], { opacity: 0, duration: .18 }, '+=.2')
+            .to(['#nosotros-happy-eye-l', '#nosotros-happy-eye-r'], { opacity: 1, duration: .18 }, '<')
+            .to('#nosotros-mouth', { opacity: 1, duration: .15 }, '<')
+            .to(['#nosotros-eye-l', '#nosotros-eye-r'], { opacity: 1, duration: .25, ease: 'back.out(1.5)' }, '+=1.2')
+            .to(['#nosotros-happy-eye-l', '#nosotros-happy-eye-r'], { opacity: 0, duration: .25 }, '<')
+            .to('#nosotros-mouth', { opacity: 0, duration: .2 }, '<')
+            .to('#bimmi-group', { y: 0, duration: .65, ease: 'power2.inOut' }, '+=.3');
+    } else {
+        gsap.set('#bimmi-group', { y: 0 });
+        nosotrosLoopTl = gsap.timeline({ repeat: -1, repeatDelay: 3.5 });
+        nosotrosLoopTl.add(nosotrosWaveOnce());
+    }
+}
+ScrollTrigger.create({
+    trigger: '#nosotros',
+    start: 'top 80%',
+    end: 'bottom 20%',
+    onEnter: startNosotrosLoop,
+    onEnterBack: startNosotrosLoop,
+    onLeave: () => { if (nosotrosLoopTl) { nosotrosLoopTl.kill(); nosotrosLoopTl = null; } },
+    onLeaveBack: () => { if (nosotrosLoopTl) { nosotrosLoopTl.kill(); nosotrosLoopTl = null; } }
+});
+
+// CTA PEEK CICLO (bracito señalando hacia abajo "¡AHÍ!" + guiño + posición random)
+const peekR = document.querySelector('.cta-peek-r');
+const peekL = document.querySelector('.cta-peek-l');
+const peekC = document.querySelector('.cta-peek-c');
+gsap.set([peekR, peekL, peekC], { y: 160, opacity: 0 });
+
+function peekWink(eyeId) {
+    const el = document.getElementById(eyeId);
+    const ox = el.getAttribute('cx') + ' ' + el.getAttribute('cy');
+    const mouthId = '#' + eyeId.replace(/-eye-(l|r)$/, '-mouth');
+    gsap.to(el, {
+        scaleY: 0.05, duration: .14, ease: 'power2.in', svgOrigin: ox,
+        onComplete() {
+            gsap.to(mouthId, { opacity: 1, duration: .1 });
+            gsap.to(el, {
+                scaleY: 1, duration: .14, ease: 'power2.out', svgOrigin: ox, delay: .55,
+                onComplete() { gsap.to(mouthId, { opacity: 0, duration: .18 }); }
+            });
+        }
+    });
+}
+
+const peekCycle = gsap.timeline({ repeat: -1, paused: true });
+peekCycle
+    .call(() => {
+        gsap.set([peekL, peekC], { y: 160, opacity: 0 });
+        peekR.style.right = (45 + Math.floor(Math.random() * 90)) + 'px';
+    })
+    .to(peekR, { y: 0, opacity: 1, duration: .5, ease: 'back.out(1.4)' })
+    .call(() => peekWink('peek-r-eye-r'), null, '+=1.0')
+    .to(peekR, { y: 160, opacity: 0, duration: .38, ease: 'power2.in' }, '+=1.0')
+    .to(peekC, { y: 0, opacity: 1, duration: .5, ease: 'back.out(1.4)' }, '+=.4')
+    .call(() => peekWink('peek-c-eye-l'), null, '+=1.0')
+    .to(peekC, { y: 160, opacity: 0, duration: .38, ease: 'power2.in' }, '+=1.0')
+    .call(() => {
+        peekL.style.left = (45 + Math.floor(Math.random() * 90)) + 'px';
+    }, null, '+=.4')
+    .to(peekL, { y: 0, opacity: 1, duration: .5, ease: 'back.out(1.4)' }, '<')
+    .call(() => peekWink('peek-l-eye-r'), null, '+=1.0')
+    .to(peekL, { y: 160, opacity: 0, duration: .38, ease: 'power2.in' }, '+=1.0');
+
+function resetPeeks() {
+    gsap.set([peekR, peekL, peekC], { y: 160, opacity: 0 });
+}
+
+ScrollTrigger.create({
+    trigger: '.cta-outer',
+    start: 'top 75%',
+    end: 'bottom 0%',
+    onEnter: () => { resetPeeks(); peekCycle.invalidate().restart(); },
+    onEnterBack: () => { resetPeeks(); peekCycle.invalidate().restart(); },
+    onLeave: () => { peekCycle.pause(); resetPeeks(); },
+    onLeaveBack: () => { peekCycle.pause(); resetPeeks(); }
+});
+
+// MOBILE COMPANION
+if (isMobile) {
+    const mobComp = document.getElementById('mobile-companion');
+    const mobEyeL = document.getElementById('mob-eye-l');
+    const mobEyeR = document.getElementById('mob-eye-r');
+
+    gsap.set(mobComp, { opacity: 0, scale: 0 });
+    gsap.to(mobComp, { opacity: 1, scale: 1, duration: .8, ease: 'back.out(2)', delay: 1.5 });
+
+    function mobWander() {
+        const vw = window.innerWidth, vh = window.innerHeight;
+        const tx = -(20 + Math.random() * (vw - 116));
+        const ty = -(16 + Math.random() * (vh * 0.48));
+        gsap.to(mobComp, { x: tx, y: ty, duration: 3.5 + Math.random() * 3.5, ease: 'sine.inOut', onComplete: mobWander });
+    }
+    gsap.delayedCall(2.5, mobWander);
+
+    function mobSmile() {
+        gsap.timeline()
+            .to([mobEyeL, mobEyeR], { opacity: 0, duration: .18 })
+            .to(['#mob-happy-eye-l', '#mob-happy-eye-r'], { opacity: 1, duration: .18 }, '<')
+            .to('#mob-mouth', { opacity: 1, duration: .15 }, '<')
+            .to([mobEyeL, mobEyeR], { opacity: 1, duration: .25, ease: 'back.out(2)' }, '+=1.2')
+            .to(['#mob-happy-eye-l', '#mob-happy-eye-r'], { opacity: 0, duration: .25 }, '<')
+            .to('#mob-mouth', { opacity: 0, duration: .3 }, '<');
+    }
+    function mobWave() {
+        gsap.to('#mob-arm-r', { rotation: -40, svgOrigin: '156 80', duration: .2, yoyo: true, repeat: 5, ease: 'sine.inOut' });
+    }
+    function mobBounce() {
+        gsap.timeline()
+            .to(mobComp, { scale: 1.2, duration: .18, ease: 'back.out(2)' })
+            .to(mobComp, { scale: 1, duration: .18, ease: 'power2.out' });
+    }
+
+    gsap.delayedCall(2.3, () => { mobSmile(); mobWave(); });
+    ScrollTrigger.create({ trigger: '#nosotros', start: 'top 65%', onEnter: () => { mobBounce(); mobSmile(); } });
+    ScrollTrigger.create({ trigger: '#servicios', start: 'top 65%', onEnter: () => { mobWave(); } });
+    ScrollTrigger.create({ trigger: '#contacto', start: 'top 65%', onEnter: () => { mobBounce(); mobSmile(); mobWave(); } });
+    ScrollTrigger.create({ trigger: '#hero', start: 'top 65%', onEnterBack: () => { mobSmile(); } });
+
+    // Animación corriente en pasos
+    const glowDot = document.getElementById('steps-glow-dot');
+    const stepsEl = document.querySelector('.steps');
+    const stepNums = Array.from(document.querySelectorAll('.step-num'));
+
+    function getStepPositions() {
+        return stepNums.map(n => {
+            // offsetTop no se ve afectado por transforms de GSAP
+            let top = 0, el = n;
+            while (el && el !== stepsEl) { top += el.offsetTop; el = el.offsetParent; }
+            return top + n.offsetHeight / 2;
+        });
+    }
+
+    function resetSteps() {
+        gsap.killTweensOf([...stepNums, glowDot]);
+        gsap.set(stepNums, { borderColor: 'var(--border)', boxShadow: 'none' });
+        gsap.set(glowDot, { opacity: 0, scale: 1 });
+    }
+
+    function runStepsAnim() {
+        resetSteps();
+        const pos = getStepPositions();
+        gsap.timeline()
+            .set(glowDot, { y: pos[0] - 8, scale: 1 })
+            .to(stepNums[0], { borderColor: '#AAFF00', boxShadow: '0 0 14px rgba(170,255,0,.5)', duration: .35 })
+            .to(glowDot, { opacity: 1, duration: .15 }, '<')
+            .to(glowDot, { y: pos[1] - 8, duration: .72, ease: 'power1.inOut' }, '+=.35')
+            .to(stepNums[1], { borderColor: '#AAFF00', boxShadow: '0 0 14px rgba(170,255,0,.5)', duration: .35 }, '-=.06')
+            .to(glowDot, { y: pos[2] - 8, duration: .72, ease: 'power1.inOut' }, '+=.35')
+            .to(stepNums[2], { borderColor: '#AAFF00', boxShadow: '0 0 14px rgba(170,255,0,.5)', duration: .35 }, '-=.06')
+            .to(glowDot, { opacity: 0, scale: 1.6, duration: .4, ease: 'power2.out' }, '+=.25');
+    }
+
+    ScrollTrigger.create({
+        trigger: '.steps',
+        start: 'top 48%',
+        onEnter: runStepsAnim,
+        onLeave: resetSteps,
+        onEnterBack: runStepsAnim,
+        onLeaveBack: resetSteps
+    });
+
+    // Efecto carrusel en cards de servicios
+    const cardsGrid = document.querySelector('.cards-grid');
+    if (cardsGrid) {
+        const servCards = Array.from(cardsGrid.children);
+        const dotEls = Array.from(document.querySelectorAll('.cdot'));
+
+        function updateCards() {
+            const cw = cardsGrid.offsetWidth;
+            const cx = cardsGrid.scrollLeft + cw / 2;
+            let activeIdx = 0, best = Infinity;
+            servCards.forEach((card, i) => {
+                const cardCx = card.offsetLeft + card.offsetWidth / 2;
+                const dist = Math.min(Math.abs(cx - cardCx) / (cw * 0.6), 1);
+                const isDisabled = card.classList.contains('disabled');
+                gsap.to(card, {
+                    scale: 1 - dist * 0.13,
+                    opacity: isDisabled ? Math.max(0.1, 0.4 - dist * 0.25) : Math.max(0.3, 1 - dist * 0.6),
+                    duration: .2,
+                    ease: 'power1.out',
+                    overwrite: 'auto'
+                });
+                const d = Math.abs(cx - cardCx);
+                if (d < best) { best = d; activeIdx = i; }
+            });
+            dotEls.forEach((d, i) => d.classList.toggle('active', i === activeIdx));
+        }
+
+        let rafPending = false;
+        cardsGrid.addEventListener('scroll', () => {
+            if (!rafPending) {
+                rafPending = true;
+                requestAnimationFrame(() => { updateCards(); rafPending = false; });
+            }
+        }, { passive: true });
+
+        ScrollTrigger.create({
+            trigger: '#servicios',
+            start: 'top 75%',
+            once: true,
+            onEnter: () => requestAnimationFrame(updateCards)
+        });
+    }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+[[headers]]
+  for = "/bimmi.png"
+  [headers.values]
+    Content-Type = "image/png"
